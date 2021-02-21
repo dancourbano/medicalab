@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	>
+
+ 
+
+<!-- Navbar -->
+
+    
+		<!--sidebar start-->
+      <aside th:fragment="menu">
+          <div id="sidebar"  class="nav-collapse ">
+              <!-- sidebar menu start-->
+              <ul class="sidebar-menu" id="nav-accordion">
+                  <li>
+                      <a class="active" th:href="@{/}">
+                          <i class="fa fa-dashboard"></i>
+                          <span>Inicio</span>
+                      </a>
+                  </li>
+				  <li class="sub-menu" sec:authorize="hasRole('ADMIN')">
+                      <a th:href="@{/paciente/}" >
+                          <i class="fa fa-laptop"></i>
+                          <span>Pacientes</span>
+                      </a>	
+				  </li>
+                  <li class="sub-menu" sec:authorize="hasRole('ADMIN')">
+                      <a href="javascript:;" >
+                          <i class="fa fa-book"></i>
+                          <span>Pruebas Lab</span>
+                      </a>
+                      <ul class="sub">
+                          <li><a  th:href="@{/informeLab/}">Informes</a></li>
+                          <li><a  th:href="@{/modeloinformelab/}">Modelo</a></li>
+                           
+                      </ul>
+                  </li>
+				  <li class="sub-menu" sec:authorize="hasRole('ADMIN')">
+                      <a th:href="@{/doctor/}" >
+                          <i class="fa fa-laptop"></i>
+                          <span>Doctor</span>
+                      </a>	
+				  </li>
+                  
+                  <!--multi level menu end-->
+
+              </ul>
+              <!-- sidebar menu end-->
+          </div>
+      </aside>
+      <!--sidebar end-->
+</html>

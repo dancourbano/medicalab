@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+
+<body>
+	<div   class="row" layout:fragment="content">
+		<div class="col-lg-8 html-content" id="informe" >
+			<div class="panel">
+				<div class="panel-body">
+					 <iframe 
+					    
+					     
+					    id="pdfEmbedded"
+					    width="100%"
+					    height="600" ></iframe> 
+					 
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-4">
+			<section class="panel">
+				<header class="panel-heading">
+					<div class="row">
+						<div class="col-lg-12">
+							<div>Informe de Laboratorio</div>
+							
+						</div>
+						 
+					</div>
+				</header>
+
+				<div class="panel-body">
+					<div id="editor"></div>
+					<form  method="POST" enctype="multipart/form-data">
+					<input type="hidden" id="informeid" th:value="${informeid}" >
+					 <a   th:with = "id=${informeid}" th:href="@{${'/informeLab/' + id}}" class="btn btn-primary btn-block"><i class="fa fa-pencil"></i> Editar</a>
+					 <button type="button" id="pdfInforme" class="btn btn-info btn-block"><i class="fa fa-download"></i> Descargar PDF</button>
+					 </form>
+				</div>
+			</section>
+		</div>
+	</div>
+
+	<div layout:fragment="scripts">
+		<script>
+			 
+			var urlContext = "http://localhost:8081/informeLab";
+			 
+			 
+			function CreatePDFfromHTML() {
+				$.ajax({
+			        url: urlContext+"/detalle/descargaInforme/"+$("#informeid").val(),
+			        type: 'get',			        
+			        before: function () {
+
+			        },
+			        success: function (data) {
+			        	
+			        	$("#pdfEmbedded").attr("src","data:application/pdf;base64,"+data.message)
+			           
+			        },
+			        error: function (jqXHR, textStatus, errorThrown) {
+			        	 console.log( jqXHR.responseText);
+			        	 
+			        }
+			    });
+				
+			}
+			
+			function printDocument() {
+			    var doc = document.getElementById("pdfEmbedded");
+
+			    //Wait until PDF is ready to print    
+			    
+			    window.frames["pdfEmbedded"].focus();
+			    window.frames["pdfEmbedded"].print();
+			     
+			}
+			
+			function base64ToArrayBuffer(base64_string){
+				return Uint8Array.from(atob(base64_string), c => c.charCodeAt(0));
+
+			}
+			$('#pdfInforme').click(function () {   
+				var arrdata= $("#pdfEmbedded").attr("src").split(",");
+				var fileBase64 = arrdata[1];
+				var arrBuffer = base64ToArrayBuffer(fileBase64 );
+				var newBlob = new Blob([arrBuffer], { type: 'application/pdf' });
+				if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+			        window.navigator.msSaveOrOpenBlob(newBlob);
+			        return;
+			    }
+
+			    // For other browsers: 
+			    // Create a link pointing to the ObjectURL containing the blob.
+			    var data = window.URL.createObjectURL(newBlob);
+
+			    var link = document.createElement('a');
+			    document.body.appendChild(link); //required in FF, optional for Chrome
+			    link.href = data;
+			    link.download = name;
+			    link.click();
+			    window.URL.revokeObjectURL(data);
+			    link.remove();
+			});
+
+			
+			
+		
+			$(document).ready(function() {
+				CreatePDFfromHTML();
+
+			});
+			
+
+			
+		
+		</script>
+
+	</div>
+</body>
+</html>

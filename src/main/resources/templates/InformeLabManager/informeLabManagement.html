@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org"
+  layout:decorate="~{layout}">
+
+<body>
+	 <div class="row" layout:fragment="content">
+		 <div class="col-lg-6">
+			 <section class="panel">
+				 <header class="panel-heading">
+			     	<div id="title-informe">Agregar Informe de Laboratorio</div>
+			     </header>
+				
+				<div class="panel-body">
+						<form role="form" id="frmModalInforme">
+							<div class="row">
+								<div class="col-lg-4">
+                                  <div class="form-group">
+                                      <label for="fechaReporte">Fecha</label>
+                                      <input type="text" class="form-control default-date-picker" name="fechaReporte" id="fechaReporte">
+                                      <input type="hidden" name="informeid" id="informeid" />
+                                      <input type="hidden" id="informeidEditar" th:value="${informeid}" >
+                                  </div>
+                                 </div>
+                                 <div class="col-lg-8">
+                                  	<div class="form-group">
+                                      <label for="modeloid">Modelo</label>
+                                      <select class="form-control select2"  name="modeloid" id="modeloid">
+                                      </select>
+                                 	</div>
+                                  </div>
+                             </div>
+                             <div class="row">
+                             	<div class="col-lg-12">
+                             		<div class="form-group">
+                                      <label for="pacienteid">Paciente</label>
+                                      <select class="form-control select2" name="pacienteid" id="pacienteid">
+                                      </select>
+                                 	</div>
+                                 	<div class="form-group">
+                                      <label for="doctorid">Doctor</label>
+                                      <select class="form-control select2" name="doctorid" id="doctorid">
+                                      </select>
+                                 	</div>
+                                 	<div class="form-group">
+                                      <label for="pacienteid">Informe</label>
+                                      
+                                      <textarea id="tinymce"  name="detalle"></textarea>
+                                 	</div>
+                                 	<div class="form-group">
+                                       <button type="button" id="button-informe" onclick="save()" class="btn btn-info">Agregar</button>
+                                 	</div>
+                             	</div>
+                             </div>
+                         </form>
+					<br />
+			
+				</div>
+			 
+			
+			</section>
+		</div>
+		 <div class="col-lg-6">
+			 <section class="panel">
+				 <header class="panel-heading">
+				 	<div class="row">
+				 		 <div class="col-lg-6">
+				     	<div>Informe de Laboratorio</div>
+				     	</div>
+				     	 <div class="col-md-offset-2 col-lg-4">
+				     	<button type="button" onclick="agregarInforme()">Agregar Informe</button>
+				     	</div>
+			     	</div>
+			     </header>
+				
+				<div class="panel-body">
+					<table id="dtElement"
+						class="table table-bordered datatable-save-state">
+						<thead>
+							<tr>
+								<th>Id</th>
+								<th>Paciente</th>
+								<th>Fecha</th>
+								<th class="text-center">Accion</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+					<br />
+				</div>
+			 
+			
+			</section>
+		</div>
+	</div>
+	
+	<div layout:fragment="scripts">
+		<script>
+		 
+        var dtTable;
+        var urlContext="http://localhost:8081/informeLab";
+        var urlContextPaciente="http://localhost:8081/paciente";
+        var urlContextDoctor="http://localhost:8081/doctor";
+        var urlContextModelo="http://localhost:8081/modeloinformelab";
+        var saveURL = urlContext+"/save";
+        var listAllURL = urlContext+'/listAllActivos';
+        var getByURL = urlContext+"/getById/";
+        var deleteURL = urlContext+"/delete/";
+       var tinymce;
+        function arrayDatatable(elem){
+        	 var array=[
+                 elem.informeid,
+                 elem.paciente.nombre+" "+elem.paciente.apellidos+"</br>"+elem.paciente.dni,
+                 elem.fechaReporte,
+                 dropDownInforme(elem.informeid)];
+        	return array;
+        }
+        function dropDownInforme(id){
+        	var dropDownTable = '<div class="btn-toolbar" role="toolbar"><div class="btn-group btn-group-sm">'
+                + '<button type="button" onclick="showDetail(' + id + ')" class="btn btn-default"><i class="fa fa-pencil-square-o"></i></button>'
+                + '<button type="button" onclick="deleteData(' + id + ')" class="btn btn-danger"><i class="fa fa-trash-o"></i></button>'
+                + '<button type="button" onclick="mostrarInforme(' + id + ')" class="btn btn-primary"><i class="fa fa-file"></i></button>'
+                + '</div></div>';
+
+            return dropDownTable;
+        }
+        function validateform(){
+        	$("#frmModalInforme").validate({
+                rules: {
+                	pacienteid: {
+                        required: true,
+                    },
+                    fechaReporte: {
+                    	required: true,
+                    },
+                    modeloid:{
+                    	required: true,
+                    }
+                },
+                messages: {
+                	pacienteid: {
+                        required: "Seleccione un paciente",
+                    },
+                    fechaReporte:{
+                    	required: "Debe ingresar una Fecha",
+                    },
+                    modeloid:{
+                    	required: "Debe seleccionar un modelo",
+                    }
+                }
+            });
+        }
+        $('.select2').on('change', function() {
+            var data = $(".select2 option:selected").data("detalle");
+            tinymce.get('tinymce').setContent(data);
+           
+        });
+        
+        $(document).ready(function () {
+        	 MostrarSummerNote();
+        	cargarOpcionesPaciente();
+        	cargarOpcionesDoctores();
+        	cargarOpcionesModeloInforme();
+        	$(".select2").select2();
+        	dtTable = $("#dtElement").DataTable({                              
+                searching: true
+            });
+        	
+        	        });
+        window.onload =function () {
+       
+       	       	
+       		cargarPacienteEditar();
+       		validateform();
+           showList();
+           cargarValorInforme();
+       };
+        function cargarPacienteEditar(){
+        	let informeid=$("#informeidEditar").val();
+        	if(informeid!=""){
+        		showDetailFunction(getByURL,informeid, functionSetData);
+        		cargarValorInforme();
+        	}
+        	
+        }
+        function cargarValorInforme(){
+        	var dataDetalle = $(".select2 option").data("detalle");
+        	 
+        	tinymce.get('tinymce').setContent(dataDetalle);
+        }
+        function cargarOpcionesPaciente(){
+        	 showListAllFunctionGenerico(urlContextPaciente+'/listAllActivos',setOptionPacientes);
+        }
+        function cargarOpcionesDoctores(){
+       	 showListAllFunctionGenerico(urlContextDoctor+'/listAllActivos',setOptionDoctores);
+       }
+        function setOptionPacientes(data){
+        	
+        	 $.each(data, function (i, item) {
+     		    $('#pacienteid').append($('<option>', { 
+     		        value: item.pacienteid,
+     		        text : item.nombre+" "+item.apellidos
+     		    }));
+     		});
+        }
+         
+        function setOptionDoctores(data){
+        	$('#doctorid').append(new Option("Ninguno", ""));
+       	 $.each(data, function (i, item) {
+    		    $('#doctorid').append($('<option>', { 
+    		        value: item.doctorid,
+    		        text : item.nombre+" "+item.apellidos
+    		    }));
+    		});
+       }
+        function cargarOpcionesModeloInforme(){
+        	 showListAllFunctionGenerico(urlContextModelo+'/listAll',setOptionModelo);
+        	 
+        }
+        
+        function setOptionModelo(data){
+       	 $.each(data, function (i, item) {
+    		    $('#modeloid').append($('<option>', { 
+    		        value: item.modeloid,
+    		        text : item.nombre
+    		       
+    		    }).attr("data-detalle",item.detalleModelo)) ;
+    		});
+       	cargarValorInforme();
+       }
+        
+       	function save(){	 
+       		
+       		var $form = $("#frmModalInforme");
+       		if($form.valid()){
+       			var arrayData = getFormData($form);
+       			saveFunction(saveURL,arrayData,arrayData.informeid);
+       		}
+       	}
+		function showList(){
+			showListAllFunction(listAllURL,arrayDatatable,dtTable);
+		}       
+		
+        
+        function functionSetData(data){
+        	var form = $("#frmModalInforme");
+        	form.find("input").not("[type='submit']").not("[type='reset']").each(function(){
+                var thisInput = $(this);
+                $("#"+thisInput.attr("name")).val(data[thisInput.attr("name")]);
+            });
+        	$("#modeloid").val(data.modeloInformeLaboratorio.modeloid).trigger('change');
+        	$("#pacienteid").val(data.paciente.pacienteid).trigger('change');
+        	if(data.doctor!=null){
+        		$("#doctorid").val(data.doctor.doctorid).trigger('change');
+        	}else{
+        		$("#doctorid").val("").trigger('change');
+        	}
+        	
+        	tinymce.get('tinymce').setContent(data.detalle);
+        	$("#title-informe").html("Editar Informe");
+        	$("#button-informe").html("Editar");
+        }
+		function showDetail(id){			
+			showDetailFunction(getByURL,id, functionSetData)
+		}
+
+        function deleteData(id) {
+        	deleteElement("el Modelo",id,deleteURL,showList,resetFormElement)
+        }
+         
+        function integerToBoolean(value){
+            return (parseInt(value)==1)?true:false;            
+        }
+        function resetFormElement() {
+            resetForm("frmModalInforme");
+            tinymce.get('tinymce').setContent("");
+        }
+        
+        function getFormData($form){
+            var unindexed_array = $form.serializeArray();
+            var indexed_array = {};
+
+            $.map(unindexed_array, function(n, i){
+            	if(n['name']=='informeid' && (n['value']===0 || n['value']==='' )){
+            		indexed_array[n['name']] = 0;
+            	} else if(n['name']=='detalle'){
+            		indexed_array[n['name']] = tinymce.get('tinymce').getContent();
+            	} else{
+                	indexed_array[n['name']] = n['value'];
+            	}
+            });
+
+            return indexed_array;
+        }
+        $('.default-date-picker').datepicker({
+            format: 'yyyy-mm-dd',
+            language: 'es',
+            autoclose: true,
+            changeMonth: true,
+            changeYear: true
+        });
+        function MostrarSummerNote(){
+        	 var useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+             tinymce.init({
+             	  selector: 'textarea#tinymce',
+             	  plugins: 'print preview powerpaste casechange importcss tinydrive searchreplace autolink autosave save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists checklist wordcount tinymcespellchecker a11ychecker imagetools textpattern noneditable help formatpainter permanentpen pageembed charmap tinycomments mentions quickbars linkchecker emoticons advtable',
+             	  tinydrive_token_provider: 'URL_TO_YOUR_TOKEN_PROVIDER',
+             	  tinydrive_dropbox_app_key: 'YOUR_DROPBOX_APP_KEY',
+             	  tinydrive_google_drive_key: 'YOUR_GOOGLE_DRIVE_KEY',
+             	  tinydrive_google_drive_client_id: 'YOUR_GOOGLE_DRIVE_CLIENT_ID',
+             	  mobile: {
+             	    plugins: 'print preview powerpaste casechange importcss tinydrive searchreplace autolink autosave save directionality advcode visualblocks visualchars fullscreen image link media mediaembed template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists checklist wordcount tinymcespellchecker a11ychecker textpattern noneditable help formatpainter pageembed charmap mentions quickbars linkchecker emoticons advtable'
+             	  },
+             	  menu: {
+             	    tc: {
+             	      title: 'TinyComments',
+             	      items: 'addcomment showcomments deleteallconversations'
+             	    }
+             	  },
+             	  menubar: 'file edit view insert format tools table tc help',
+             	  toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | a11ycheck ltr rtl | showcomments addcomment',
+             	  autosave_ask_before_unload: true,
+             	  autosave_interval: '30s',
+             	  autosave_prefix: '{path}{query}-{id}-',
+             	  autosave_restore_when_empty: false,
+             	  autosave_retention: '2m',
+             	  image_advtab: true,
+             	  link_list: [
+             	    { title: 'My page 1', value: 'https://www.tiny.cloud' },
+             	    { title: 'My page 2', value: 'http://www.moxiecode.com' }
+             	  ],
+             	  image_list: [
+             	    { title: 'My page 1', value: 'https://www.tiny.cloud' },
+             	    { title: 'My page 2', value: 'http://www.moxiecode.com' }
+             	  ],
+             	  image_class_list: [
+             	    { title: 'None', value: '' },
+             	    { title: 'Some class', value: 'class-name' }
+             	  ],
+             	  importcss_append: true,
+             	  templates: [
+             	        { title: 'New Table', description: 'creates a new table', content: '<div class="mceTmpl"><table width="98%%"  border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>' },
+             	    { title: 'Starting my story', description: 'A cure for writers block', content: 'Once upon a time...' },
+             	    { title: 'New list with dates', description: 'New List with dates', content: '<div class="mceTmpl"><span class="cdate">cdate</span><br /><span class="mdate">mdate</span><h2>My List</h2><ul><li></li><li></li></ul></div>' }
+             	  ],
+             	  template_cdate_format: '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
+             	  template_mdate_format: '[Date Modified (MDATE): %m/%d/%Y : %H:%M:%S]',
+             	  height: 600,
+             	  image_caption: true,
+             	  quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+             	  noneditable_noneditable_class: 'mceNonEditable',
+             	  toolbar_mode: 'sliding',
+             	  spellchecker_whitelist: ['Ephox', 'Moxiecode'],
+             	  tinycomments_mode: 'embedded',
+             	  content_style: '.mymention{ color: gray; }',
+             	  contextmenu: 'link image imagetools table configurepermanentpen',
+             	  a11y_advanced_options: true,
+             	  skin: useDarkMode ? 'oxide-dark' : 'oxide',
+             	  content_css: useDarkMode ? 'dark' : 'default',
+             	  /*
+             	  The following settings require more configuration than shown here.
+             	  For information on configuring the mentions plugin, see:
+             	  https://www.tiny.cloud/docs/plugins/premium/mentions/.
+             	  */
+             	  mentions_selector: '.mymention',
+             	  pagebreak_separator: "<!-- my page break -->"
+             	   
+             	});
+        }
+       
+        function agregarInforme(){
+        	$("#title-informe").html("Agregar Informe de Laboratorio");
+        	$("#informeid").val("");
+        	 resetFormElement();
+        	 cargarValorInforme();
+        	 $("#modeloid").val($("#modeloid option:first").val()).trigger('change');
+        	 $("#button-informe").html("Agregar");
+        }
+        function mostrarInforme(id){
+        	document.location.href = '/informeLab/detalle/'+id;
+        }
+        </script>
+
+    	</div>
+</body>
+</html>

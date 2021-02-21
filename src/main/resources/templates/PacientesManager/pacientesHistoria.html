@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org"
+  layout:decorate="~{layout}">
+
+<body>
+	 <div class="row" layout:fragment="content">
+		 <div class="col-lg-4">
+			 <section class="panel">
+				 <header class="panel-heading">
+			     	<div id="title-informe">Informacion Paciente</div>
+			     </header>
+				
+				<div class="panel-body">
+						<form role="form" id="frmModalInforme">
+							 <aside class="profile-nav alt green-border">
+                          <section class="panel">
+                              <div class="user-heading alt green-bg">
+                                  <a href="#">
+                                      <img id="image-perfil" alt="" src="">
+                                  </a>
+                                  <h1><input type="hidden" id="pacienteid" th:value="${pacienteid}" ><div id="nombre"></div></h1>
+                                  <p><div id="email"></div></p>
+                              </div>
+
+                              <ul class="nav nav-pills nav-stacked">
+                                  <li><a href="javascript:;"><b  >DNI</b> <span id="dni"></span>  </a></li>
+                                  <li><a href="javascript:;"><b>Telefono</b> <span class="inline"id="telefono1"></span>   </a></li>
+                                  <li><a href="javascript:;"><b>Sexo</b> <span class="inline" id="sexo"></span> </a></li>
+                                  <li><a href="javascript:;"><b>Fecha Nacimiento</b>  <span id="fechaNacimiento"></span></a></li>
+                                  <li><a href="javascript:;"><b>Direccion</b> <span id="direccion"></span></a></li>
+                                  <li><a href="javascript:;"><b>Ciudad</b> <span id="ciudad"></span></a></li>
+                                  <li><a href="javascript:;"><b>Fecha Inscripcion</b> <span id="fechaCreacion"></span> </a></li>
+                                  <li><a href="javascript:;"><b>Grupo sanguineo</b> <span id="grupoSanguineo"></span> </a></li>
+                              </ul>
+
+                          </section>
+                      </aside>
+                             
+                         </form>
+					<br />
+			
+				</div>
+			 
+			
+			</section>
+		</div>
+		 <div class="col-lg-8">
+			 <section class="panel">
+				 <header class="panel-heading">
+				 	 
+				     	<div>Historia en Informe Laboratorio</div>
+			     </header>
+				
+				<div class="panel-body">
+					<table id="dtElement"
+						class="table table-bordered datatable-save-state">
+						<thead>
+							<tr>
+								<th>Id</th>
+								<th>Fecha Registro</th>
+								<th>Nombre Modelo Informe</th>
+								<th class="text-center">Accion</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+					<br />
+				</div>
+			 
+			
+			</section>
+		</div>
+	</div>
+	
+	<div layout:fragment="scripts">
+		<script>
+		 
+        var dtTable;
+         
+        var urlContextPaciente="http://localhost:8081/paciente";
+        
+        var listAllURL="http://localhost:8081/paciente/historia/listAllByPaciente/";
+        
+        
+       
+        function arrayDatatable(elem){
+        	 var array=[
+                 elem.informeid,
+                 elem.fechaReporte,
+                 elem.modeloInformeLaboratorio.nombre,
+                 dropDownInforme(elem.informeid)];
+        	return array;
+        }
+        function dropDownInforme(id){
+        	var dropDownTable = '<div class="btn-toolbar" role="toolbar"><div class="btn-group btn-group-sm">'
+                + '<a href="/informeLab/detalle/' + id + '" class="btn btn-primary"><i class="fa fa-file"></i></button>'
+                + '</div></div>';
+
+            return dropDownTable;
+        }
+         
+        $(document).ready(function () {
+        	cargarDatosPaciente();
+        	dtTable = $("#dtElement").DataTable({                              
+                searching: true
+            });
+        	showList();
+        });
+        
+        function cargarDatosPaciente(){
+        	var url=urlContextPaciente+'/getById/'+$("#pacienteid").val();
+        	showListAllFunctionGenerico(url,setDataPaciente);
+        }
+        function mostrarInforme(){
+        	
+        }
+        
+        function setDataPaciente(data){
+        	$("#nombre").append(data.nombre+" "+data.apellidos);
+        	$("#email").append(data.email);
+        	$("#dni").append(data.dni);
+        	$("#direccion").append(data.direccion);
+        	$("#ciudad").append(data.ciudad);
+        	$("#sexo").append(mostrarSexo(data.sexo));
+        	$("#telefono1").append(data.telefono1);
+        	$("#fechaNacimiento").append(data.fechaNacimiento);
+        	$("#fechaCreacion").append(data.fechaCreacion);
+        	$("#grupoSanguineo").append(data.grupoSanguineo);
+        	var urlImagenPerfil=[[@{/img/}]];
+        	$("#image-perfil").attr("src",urlImagenPerfil+data.sexo+".png");
+        }
+        
+        function mostrarSexo(id){
+        	return (id==="1")? "Hombre":"Mujer";
+        }
+        
+		function showList(){
+			var url=listAllURL+$("#pacienteid").val();
+			showListAllFunction(url,arrayDatatable,dtTable);
+		}       
+        
+        function resetFormElement() {
+            resetForm("frmModalInforme");
+           
+        }
+        
+        </script>
+
+    	</div>
+</body>
+</html>

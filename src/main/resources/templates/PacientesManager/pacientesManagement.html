@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+  layout:decorate="~{layout}">
+
+<body>
+	 <div class="row" layout:fragment="content">
+	 <div class="col-lg-12">
+	 <section class="panel">
+	 <header class="panel-heading">
+                            <div>Listar Pacientes</div>
+     </header>
+	
+	<div class="panel-body">
+		<div class="row" sec:authorize="hasRole('ADMIN')">
+			<div class="col-md-8">
+				<button type="button" class="btn bg-blue btn-labeled heading-btn"
+					onclick="create()">
+					<i class="icon-plus3 position-left"></i> Agregar
+				</button>
+			</div>
+		</div>
+		<br />
+
+
+		<table id="dtElement"
+			class="table table-bordered datatable-save-state">
+			<thead>
+				<tr>
+					<th>Id</th>
+					<th>DNI</th>
+					<th>Nombre</th>
+					<th>Apellidos</th>
+					<th>Correo</th>
+					<th>Celular</th>
+					<th>Estado</th>
+					<th class="text-center">Accion</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+
+
+		<div id="modal_default" class="modal fade">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h5 class="modal-title">Paciente</h5>
+					</div>
+
+					<div class="modal-body">
+
+						<form id="frmModalPaciente" class="form-horizontal">
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label class="col-lg-3  col-sm-2 control-label">DNI/RUC</label>
+										<div class="col-lg-6 col-sm-7">
+											<input type="text" name="dni" id="dni"
+												class="form-control" />
+
+										</div>
+										<div class="col-lg-3 col-sm-3">
+											<button  type="button" class="btn btn-info" onclick="mostrarSunat()">Completar</button>
+
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-lg-3 col-sm-2 control-label">Nombre</label>
+										<div class="col-lg-9 col-sm-10">
+											<input type="text" name="nombre" id="nombre" required 
+												class="form-control" /> <input type="hidden" name="pacienteid"
+												id="pacienteid" /> 											
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-lg-3 col-sm-2 control-label">Apellidos</label>
+										<div class="col-lg-9 col-sm-10">
+											<input type="text" name="apellidos" id="apellidos"
+												class="form-control" />
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-lg-3 col-sm-2 control-label">Correo</label>
+										<div class="col-lg-9 col-sm-10 ">
+											<input type="email" name="email" id="email"
+												class="form-control" />
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-lg-3 col-sm-2 control-label">telefono</label>
+										<div class="col-lg-9 col-sm-10">
+											<input type="text" name="telefono1" id="telefono1"
+												class="form-control" />
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-lg-3 col-sm-2 control-label">Fecha Nacimiento</label>
+										<div class="col-lg-9 col-sm-10">
+											<input type="text" name="fechaNacimiento" id="fechaNacimiento"
+												class="form-control default-date-picker" />
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6">
+									
+									<div class="form-group">
+										<label class="col-lg-3 col-sm-2 control-label">Password</label>
+										<div class="col-lg-9 col-sm-10">
+											<input type="password" name="password" id="password"
+												class="form-control" />
+											 
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-lg-3 col-sm-2 control-label">Sexo</label>
+										<div class="col-lg-9 col-sm-10">
+											<select name="sexo" id="sexo" class="form-control">
+												<option value="1">Hombre</option>
+												<option value="0">Mujer</option>
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-lg-3 col-sm-2 control-label">Ciudad</label>
+										<div class="col-lg-9 col-sm-10">
+											<input type="text" name="ciudad" id="ciudad"
+												class="form-control" />
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-lg-3 col-sm-2 control-label">Direccion</label>
+										<div class="col-lg-9 col-sm-10">
+											<textarea class="form-control" rows="3" name="direccion"
+												id="direccion"></textarea>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-lg-3 col-sm-2 control-label">Grupo Sanguineo</label>
+										<div class="col-lg-9 col-sm-10">
+											<select name="grupoSanguineo" id="grupoSanguineo" class="form-control">
+												<option value="A+"> A+ </option>
+                                                <option value="A-"> A- </option>
+                                                <option value="B+"> B+ </option>
+                                                <option value="B-"> B- </option>
+                                                <option value="AB+"> AB+ </option>
+                                                <option value="AB-"> AB- </option>
+                                                <option value="O+"> O+ </option>
+                                                <option value="O-"> O- </option>
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-lg-3 col-sm-2 control-label">Estado</label>
+										<div class="col-lg-9 col-sm-10">
+											<select name="estado" id="estado" class="form-control">
+												<option value="1"> Activo </option>
+                                                <option value="0"> Inactivo </option>
+                                                 
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+
+					<div class="modal-footer">
+						<button type="button" class="btn btn-link" data-dismiss="modal">Cerrar</button>
+						<button type="button" onclick="save()" class="btn btn-primary">Guardar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	 
+	
+	</section>
+	</div>
+	</div>
+	
+	<div layout:fragment="scripts">
+		<script>
+		 
+        var dtTable;
+        var urlContext="http://localhost:8081/paciente";
+        var saveURL = urlContext+"/save";
+        var listAllURL = urlContext+'/listAll';
+        var getByURL = urlContext+"/getById/";
+        var deleteURL = urlContext+"/delete/";
+       
+        function arrayDatatable(elem){
+        	 var array=[
+                 elem.pacienteid,
+                 elem.dni,
+                 elem.nombre,
+                 elem.apellidos,
+                 elem.email,
+                 elem.telefono1,
+                 mostrarBadgeEstado(elem.estado),
+                 dropDownPacientes(elem.pacienteid)];
+        	return array;
+        }
+        
+        function mostrarBadgeEstado(estado){
+        	if(estado=="1"){
+        		return "<span class='badge badge-sm label-success'>Activo</span>"
+        	}else{
+        		return "<span class='badge badge-sm label-danger'>Inactivo</span>"
+        	}
+        }
+        function dropDownPacientes(id){
+        	var dropDownTable = '<div class="btn-toolbar" role="toolbar"><div class="btn-group btn-group-sm">'
+                + '<button type="button" onclick="showDetail(' + id + ')" class="btn btn-default"><i class="fa fa-pencil-square-o"></i></button>'
+                + '<button type="button" onclick="deleteData(' + id + ')" class="btn btn-danger"><i class="fa fa-trash-o"></i></button>'
+                + '<a href="/paciente/historia/' + id + '" class="btn btn-primary"><i class="fa fa-file"></i></button>'
+                + '</div></div>';
+
+            return dropDownTable;
+        }
+        function validateform(){
+        	$("#frmModalPaciente").validate({
+                rules: {
+                    nombre: {
+                        required: true,
+                    },
+                    email:{
+                    	required: true,
+                    	email: true
+                    },
+                    apellidos:{
+                    	required: true,
+                    },
+                    fechaNacimiento:{
+                    	required: true,
+                    },
+                    dni:{
+                    	required: true,
+                    	minlength:8
+                    },
+                    telefono1:{
+                    	required: true,
+                    	minlength: 9
+                    }
+                },
+                messages: {
+                	nombre: {
+                        required: "Ingrese un nombre",
+                    },
+                    email:{
+                    	required: "Ingrese un correo",
+                    	email: "Ingrese un formato correcto de email"
+                    },
+                    apellidos:{
+                    	required: "Ingrese un apellidos",
+                    },
+                    fechaNacimiento:{
+                    	required: "Ingrese un fechaNacimiento",
+                    },
+                    dni:{
+                    	required: "Ingrese un DNI/RUC",
+                    	minlength: "La cantidad de caracteres no pertenece a DNI/RUC",
+                    },
+                    telefono1:{
+                    	required: "Ingrese un telefono",
+                    	minlength: "No es un telefono v&aacute;lido",
+                    }
+                }
+            });
+        }
+        $(document).ready(function () {
+        	
+        	dtTable = $("#dtElement").DataTable({                              
+                searching: true
+            });
+        	validateform();
+            showList();
+        });
+        
+       	function save(){	 
+       		
+       		var $form = $("#frmModalPaciente");
+       		if($form.valid()){
+       			var arrayData = getFormData($form);
+       			saveFunction(saveURL,arrayData,arrayData.pacienteid);
+       		}
+       	}
+		function showList(){
+			showListAllFunction(listAllURL,arrayDatatable,dtTable);
+		}       
+		
+        function create() {
+        	resetFormElement();
+            $("#pacienteid").val(0);
+            $('#modal_default').modal();
+        }
+        function functionSetData(data){
+        	var form = $("#frmModalPaciente");
+        	form.find("input,select").not("[type='submit']").not("[type='reset']").each(function(){
+                var thisInput = $(this);
+                $("#"+thisInput.attr("name")).val(data[thisInput.attr("name")]);
+            });
+        	 
+        }
+		function showDetail(id){			
+			showDetailFunction(getByURL,id, functionSetData)
+		}
+         
+		 function functionSetDataPorIdentificadorPaciente(data){
+		        $("#nombre").val(data.nombre);
+		        $("#apellidos").val(data.apellidos);
+		        $("#dni").val(data.dni);
+		        if(data.direccion!=null){
+		        	$("#direccion").val(data.direccion);
+		        }
+	        }
+
+        function deleteData(id) {
+        	deleteElementBajaLogica("el Paciente",id,deleteURL,showList,resetFormElement)
+        }
+        function setValueCheckType(id){
+            return $(id).prop("checked")? 1:0;             
+        }
+        function integerToBoolean(value){
+            return (parseInt(value)==1)?true:false;            
+        }
+        function resetFormElement() {
+            resetForm("frmModalPaciente");
+        }
+        
+        function mostrarSunat(){
+
+        	var listDataSunat = urlContext+'/getByDNI';
+
+        	var arrayData={                    
+                    dni: $("#dni").val()
+            }
+        	showDetailFunctionPost(listDataSunat,arrayData, functionSetDataPorIdentificadorPaciente)
+        }
+     
+        function getFormData($form){
+            var unindexed_array = $form.serializeArray();
+            var indexed_array = {};
+
+            $.map(unindexed_array, function(n, i){
+            	if(n['name']=='pacienteid' && n['value']===0){
+            		indexed_array[n['name']] = 0;
+            	}else{
+                	indexed_array[n['name']] = n['value'];
+            	}
+            });
+
+            return indexed_array;
+        }
+        $('.default-date-picker').datepicker({
+            format: 'yyyy-mm-dd',
+            language: 'es',
+            autoclose: true,
+            changeMonth: true,
+            changeYear: true
+        });
+        </script>
+
+    	</div>
+</body>
+</html>
