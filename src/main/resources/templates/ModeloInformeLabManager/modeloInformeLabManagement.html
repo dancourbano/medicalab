@@ -86,9 +86,11 @@
 	
 	<div layout:fragment="scripts">
 		<script>
-		 
+		/*<![CDATA[*/
+	        var context = [[@{/}]];
+	    /*]]>*/
         var dtTable;
-        var urlContext="http://localhost:8081/modeloinformelab";
+        var urlContext=context+"modeloinformelab";
         var saveURL = urlContext+"/save";
         var listAllURL = urlContext+'/listAll';
         var getByURL = urlContext+"/getById/";

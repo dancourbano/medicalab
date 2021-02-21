@@ -43,8 +43,10 @@
 
 	<div layout:fragment="scripts">
 		<script>
-			 
-			var urlContext = "http://localhost:8081/informeLab";
+			/*<![CDATA[*/
+		        var context = [[@{/}]];
+		    /*]]>*/
+			var urlContext = context+"informeLab";
 			 
 			 
 			function CreatePDFfromHTML() {

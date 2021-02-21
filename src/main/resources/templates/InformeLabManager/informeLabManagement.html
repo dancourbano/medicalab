@@ -96,12 +96,14 @@
 	
 	<div layout:fragment="scripts">
 		<script>
-		 
+		/*<![CDATA[*/
+	        var context = [[@{/}]];
+	    /*]]>*/
         var dtTable;
-        var urlContext="http://localhost:8081/informeLab";
-        var urlContextPaciente="http://localhost:8081/paciente";
-        var urlContextDoctor="http://localhost:8081/doctor";
-        var urlContextModelo="http://localhost:8081/modeloinformelab";
+        var urlContext=context+"informeLab";
+        var urlContextPaciente=context+"paciente";
+        var urlContextDoctor=context+"doctor";
+        var urlContextModelo=context+"modeloinformelab";
         var saveURL = urlContext+"/save";
         var listAllURL = urlContext+'/listAllActivos';
         var getByURL = urlContext+"/getById/";

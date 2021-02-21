@@ -75,10 +75,12 @@
 	
 	<div layout:fragment="scripts">
 		<script>
-		 
+		 /*<![CDATA[*/
+	        var context = [[@{/}]];
+	    /*]]>*/
         var dtTable;
          
-        var urlContextPaciente="http://localhost:8081/paciente";
+        var urlContextPaciente=context"paciente";
         
         var listAllURL="http://localhost:8081/paciente/historia/listAllByPaciente/";
         

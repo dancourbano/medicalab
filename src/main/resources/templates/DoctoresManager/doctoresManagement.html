@@ -99,9 +99,11 @@
 	
 	<div layout:fragment="scripts">
 		<script>
-		 
+		/*<![CDATA[*/
+        var context = [[@{/}]];
+  		 /*]]>*/
         var dtTable;
-        var urlContext="http://localhost:8081/doctor";
+        var urlContext=context+"doctor";
         var saveURL = urlContext+"/save";
         var listAllURL = urlContext+'/listAll';
         var getByURL = urlContext+"/getById/";
