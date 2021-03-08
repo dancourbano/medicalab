@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
@@ -29,6 +31,7 @@ import com.sistema.medicalabs.AppProperties.MedicalAppUrl;
 import com.sistema.medicalabs.AppProperties.MedicalAppView;
 import com.sistema.medicalabs.entidad.AjaxResponseBody;
 import com.sistema.medicalabs.entidad.Paciente;
+import com.sistema.medicalabs.entidad.Users;
 import com.sistema.medicalabs.exception.ModeloNotFoundException;
 import com.sistema.medicalabs.service.PacienteService;
 
@@ -45,7 +48,7 @@ public class PacienteController {
 	}
 	@Secured({"ROLE_ADMIN", "ROLE_PACIENTE"})
 	@GetMapping(value = MedicalAppUrl.GET_PACIENTE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Object> getById(@PathVariable Integer id) {
+	public ResponseEntity<Object> getById(@PathVariable Integer id,Authentication authentication) {
 		Optional<Paciente> optional = pacienteService.findOne(id);
 		if(optional.isPresent()) {
 			return new ResponseEntity<Object>(optional.get(), HttpStatus.OK);

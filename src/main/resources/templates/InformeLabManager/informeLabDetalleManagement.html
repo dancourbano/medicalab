@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
 	xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
 
 <body>
@@ -33,7 +33,7 @@
 					<div id="editor"></div>
 					<form  method="POST" enctype="multipart/form-data">
 					<input type="hidden" id="informeid" th:value="${informeid}" >
-					 <a   th:with = "id=${informeid}" th:href="@{${'/informeLab/' + id}}" class="btn btn-primary btn-block"><i class="fa fa-pencil"></i> Editar</a>
+					 <a   th:with = "id=${informeid}" sec:authorize="hasRole('ADMIN')" th:href="@{${'/informeLab/' + id}}" class="btn btn-primary btn-block"><i class="fa fa-pencil"></i> Editar</a>
 					 <button type="button" id="pdfInforme" class="btn btn-info btn-block"><i class="fa fa-download"></i> Descargar PDF</button>
 					 </form>
 				</div>

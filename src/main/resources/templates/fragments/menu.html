@@ -25,6 +25,12 @@
                           <span>Pacientes</span>
                       </a>	
 				  </li>
+				  <li class="sub-menu" sec:authorize="hasRole('PACIENTE')"  th:if="${session.userSession!=''}" >
+                      <a th:href="@{/paciente/historia/}+${session.userSession} " >
+                          <i class="fa fa-laptop"></i>
+                          <span>Tu Historial</span>
+                      </a>	
+				  </li>
                   <li class="sub-menu" sec:authorize="hasRole('ADMIN')">
                       <a href="javascript:;" >
                           <i class="fa fa-book"></i>

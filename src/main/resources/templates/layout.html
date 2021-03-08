@@ -33,7 +33,9 @@
     <link rel="stylesheet" type="text/css" th:href="@{/assets/bootstrap-daterangepicker/daterangepicker-bs3.css}" />
     <link rel="stylesheet" type="text/css" th:href="@{/assets/bootstrap-datetimepicker/css/datetimepicker.css}" />
 	<link rel="stylesheet" type="text/css" th:href="@{/assets/select2/css/select2.min.css}"/>
-	<link th:href="@{/assets/summernote/dist/summernote.css}" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/css/suneditor.min.css" rel="stylesheet"/>
+<!-- <link href="https://cdn.jsdelivr.net/npm/suneditor@latest/assets/css/suneditor.css" rel="stylesheet"> -->
+<!-- <link href="https://cdn.jsdelivr.net/npm/suneditor@latest/assets/css/suneditor-contents.css" rel="stylesheet"> -->
 	<link type="text/css" th:href="@{/css/style.css}" rel="stylesheet">
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 tooltipss and media queries -->
     <!--[if lt IE 9]>
@@ -223,12 +225,10 @@
     <script th:src="@{/js/jquery.customSelect.min.js}" ></script>
     <script th:src="@{/js/respond.min.js}" ></script>
 	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-	<script src="https://cdn.tiny.cloud/1/jd6wyd2tgs3w3hv4ou5b2gr9p4ynirt3qcrgkrqnqet1wvb0/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-	 <script>
-    tinymce.init({
-      selector: '#mytextarea'
-    });
-  </script>
+	
+<script src="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/suneditor.min.js"></script>
+<!-- lanth:guages (Basic Language: English/en) -->
+<script src="https://cdn.jsdelivr.net/npm/suneditor@latest/src/lang/ko.js"></script>
 	
 	<script type="text/javascript"  th:src="@{/assets/fuelux/js/spinner.min.js}"></script>
 	  <script type="text/javascript"  th:src="@{/assets/bootstrap-fileupload/bootstrap-fileupload.js}"></script>

@@ -62,8 +62,5 @@ public class InformeLabDetalleController {
 				resultAjax.setMessage(encoded);
 		        return new ResponseEntity<Object>(resultAjax, HttpStatus.OK);
 	        
-	       
-			 
-	        
 	}
 }
