@@ -21,10 +21,24 @@
                                       <input type="hidden" id="informeidEditar" th:value="${informeid}" >
                                   </div>
                                  </div>
-                                 <div class="col-lg-8">
+                                 <div class="col-lg-4">
+                                  <div class="form-group">
+                                      <label for="horaReporte">Hora</label>
+                                      
+                                      <div class="col-md-12">
+                                          <div class="input-group bootstrap-timepicker">
+                                              <input type="text" class="form-control timepicker-default" name="horaReporte" id="horaReporte">
+                                                <span class="input-group-btn">
+                                                <button class="btn btn-default" type="button"><i class="fa fa-clock-o"></i></button>
+                                                </span>
+                                          </div>
+                                      </div>
+                                 	 </div>
+                                  </div>
+                                 <div class="col-lg-4">
                                   	<div class="form-group">
                                       <label for="modeloid">Modelo</label>
-                                      <select class="form-control select2"  name="modeloid" id="modeloid">
+                                      <select  multiple="multiple"   class="form-control select2"  name="modeloid" id="modeloid">
                                       </select>
                                  	</div>
                                   </div>
@@ -46,9 +60,19 @@
                                       
                                       <textarea id="editorWeb"  name="detalle"></textarea>
                                  	</div>
-                                 	<div class="form-group">
-                                       <button type="button" id="button-informe" onclick="save()" class="btn btn-info">Agregar</button>
-                                 	</div>
+                                 	 
+                                 	 
+                                 	<div class="form-group row">
+                                          <div class=" col-lg-6">
+                                              <button type="button" id="button-informe" onclick="save()" class="btn btn-info">Guardar</button>
+                                          </div>
+										  <div class="col-lg-3">
+                                              <button type="button" id="button-limpiar-informe" onclick="resetInforme()" class="btn btn-danger">Limpiar Informe</button>
+                                          </div>
+                                          <div class="col-lg-2">
+                                              <button type="button" id="button-limpiar-todo" onclick="resetFormElement()" class="btn btn-danger">Limpiar Todo</button>
+                                          </div>
+                                      </div>
                              	</div>
                              </div>
                          </form>
@@ -127,7 +151,7 @@
 
             return dropDownTable;
         }
-        function validateform(){
+      function validateform(){
         	$("#frmModalInforme").validate({
                 rules: {
                 	pacienteid: {
@@ -153,14 +177,20 @@
                 }
             });
         }
-        $('.select2').on('change', function() {
-            var data = $(".select2 option:selected").data("detalle");
-           
-           editor.setContents(data);
-        });
-        
+         
+        $('.select2').on('select2:select', function(e) {
+      	  var idOption = e.params.data.id;
+      	  var dataSelected = $("#modeloid>option[value="+idOption+"]").data("detalle");
+      	 dataOld= editor.summernote('code');
+         if(dataOld===undefined){
+      	   dataOld="";
+         }
+         editor.summernote('code', dataOld+dataSelected);
+      	 
+      });
         $(document).ready(function () {
-        	 MostrarSummerNote();
+        	$('.timepicker-default').timepicker();
+        	MostrarSummerNote();
         	cargarOpcionesPaciente();
         	cargarOpcionesDoctores();
         	cargarOpcionesModeloInforme();
@@ -168,7 +198,7 @@
         	dtTable = $("#dtElement").DataTable({                              
                 searching: true
             });
-        	
+         
         	        });
         window.onload =function () {
        
@@ -176,8 +206,10 @@
        		cargarPacienteEditar();
        		validateform();
            showList();
-           cargarValorInforme();
+           
        };
+       
+     
         function cargarPacienteEditar(){
         	let informeid=$("#informeidEditar").val();
         	if(informeid!=""){
@@ -188,7 +220,7 @@
         }
         function cargarValorInforme(){
         	var dataDetalle = $(".select2 option").data("detalle");
-        	editor.setContents(dataDetalle);
+        	editor.summernote('code', dataDetalle);
         	 
         }
         function cargarOpcionesPaciente(){
@@ -229,7 +261,7 @@
     		       
     		    }).attr("data-detalle",item.detalleModelo)) ;
     		});
-       	cargarValorInforme();
+      // 	cargarValorInforme();
        }
         
        	function save(){	 
@@ -238,6 +270,7 @@
        		if($form.valid()){
        			var arrayData = getFormData($form);
        			saveFunction(saveURL,arrayData,arrayData.informeid);
+       			resetFormElement();
        		}
        	}
 		function showList(){
@@ -251,14 +284,14 @@
                 var thisInput = $(this);
                 $("#"+thisInput.attr("name")).val(data[thisInput.attr("name")]);
             });
-        	$("#modeloid").val(data.modeloInformeLaboratorio.modeloid).trigger('change');
+        	$("#modeloid").val(JSON.parse("[" + data.modeloid + "]")).trigger('change');
         	$("#pacienteid").val(data.paciente.pacienteid).trigger('change');
         	if(data.doctor!=null){
         		$("#doctorid").val(data.doctor.doctorid).trigger('change');
         	}else{
         		$("#doctorid").val("").trigger('change');
         	}
-        	editor.setContents(data.detalle);
+        	editor.summernote('code', data.detalle);
         	 
         	$("#title-informe").html("Editar Informe");
         	$("#button-informe").html("Editar");
@@ -276,10 +309,10 @@
         }
         function resetFormElement() {
             resetForm("frmModalInforme");
-            editor.setContents("");
+            editor.summernote('code', "");
             
         }
-        
+    
         function getFormData($form){
             var unindexed_array = $form.serializeArray();
             var indexed_array = {};
@@ -288,8 +321,10 @@
             	if(n['name']=='informeid' && (n['value']===0 || n['value']==='' )){
             		indexed_array[n['name']] = 0;
             	} else if(n['name']=='detalle'){
-            		indexed_array[n['name']] = editor.getContents();
-            	} else{
+            		indexed_array[n['name']] = editor.summernote('code');
+            	} else if(n['name']=='modeloid'){
+            		indexed_array[n['name']] = $("#modeloid").val().toString();
+            	}  else{
                 	indexed_array[n['name']] = n['value'];
             	}
             });
@@ -304,37 +339,25 @@
             changeYear: true
         });
         function MostrarSummerNote(){
-        	   editor=SUNEDITOR.create('editorWeb',{
-		   		     
-       		    width : '100%',
-       		    maxWidth : '600px',
-       		    minWidth : '400px',
-       		    height : 'auto',
-       		    videoWidth : '80%',
-       		    youtubeQuery : 'autoplay=1&mute=1&enablejsapi=1',
-       		    popupDisplay : 'local',
-       		    resizingBar : false,
-	       		 buttonList : [
-	 	   	        ['undo', 'redo', 'font', 'fontSize', 'formatBlock'],
-	 	   	        ['bold', 'underline', 'italic', 'strike', 'removeFormat','fontColor', 'hiliteColor', 'outdent', 'indent', 'align', 'horizontalRule', 'list', 'table','link', 'image', 'video', 'fullScreen', 'showBlocks', 'codeView', 'preview']
-	 	   	    ],
-       		    callBackSave: function (contents, isChanged) {
-       		        alert(contents);
-       		    }
-       	});
+        	   
+        	editor=$('#editorWeb').summernote({
+       	 		lang: 'es-ES',
+       	 		 height: 200,           
+       	 	});
+       
         }
-        
+      
         function agregarInforme(){
-        	$("#title-informe").html("Agregar Informe de Laboratorio");
-        	$("#informeid").val("");
-        	 resetFormElement();
-        	 cargarValorInforme();
-        	 $("#modeloid").val($("#modeloid option:first").val()).trigger('change');
+        	document.location.href = '/informeLab/';
         	 $("#button-informe").html("Agregar");
         }
         function mostrarInforme(id){
         	document.location.href = '/informeLab/detalle/'+id;
         }
+        function resetInforme(){
+        	$('#editorWeb').summernote('reset');
+        }
+        
         </script>
 
     	</div>

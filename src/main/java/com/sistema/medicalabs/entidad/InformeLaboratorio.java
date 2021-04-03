@@ -36,6 +36,9 @@ public class InformeLaboratorio implements Serializable{
 	@Column(name = "fecha_reporte")
 	private String fechaReporte;
 	
+	@Column(name = "hora_reporte")
+	private String horaReporte;
+	
 	@Getter(value=AccessLevel.NONE)
 	@Setter(value=AccessLevel.NONE)
 	@Lob
@@ -50,9 +53,8 @@ public class InformeLaboratorio implements Serializable{
 	@JoinColumn(name = "pacienteid")
     private Paciente paciente;
 	
-	@ManyToOne(optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST }, fetch = FetchType.EAGER)
-	@JoinColumn(name = "modeloid")
-	private ModeloInformeLaboratorio modeloInformeLaboratorio;
+	@Column(name = "modeloid")
+	private String modeloid;
 	
 	@ManyToOne(optional = true, cascade = { CascadeType.MERGE, CascadeType.PERSIST }, fetch = FetchType.EAGER)
 	@JoinColumn(name = "doctorid")

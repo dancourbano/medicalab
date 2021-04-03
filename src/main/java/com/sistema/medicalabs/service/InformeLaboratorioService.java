@@ -1,5 +1,8 @@
 package com.sistema.medicalabs.service;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +18,7 @@ import com.sistema.medicalabs.entidad.InformeLaboratorio;
 import com.sistema.medicalabs.entidad.ModeloInformeLaboratorio;
 import com.sistema.medicalabs.entidad.Paciente;
 import com.sistema.medicalabs.repository.InformeLaboratorioRepository;
+import com.sistema.medicalabs.utilidades.Utilidades;
 
 @Service
 public class InformeLaboratorioService {
@@ -55,28 +59,25 @@ public class InformeLaboratorioService {
 	@Transactional(readOnly = false)
 	public InformeLaboratorio save(InformeLaboratorioDto entity) {
 		InformeLaboratorio informeLab=new InformeLaboratorio();
-		Optional<ModeloInformeLaboratorio> optionModelo= 
-				modeloInformeLabService.findOne(Integer.parseInt(entity.getModeloid()));
-		
-		if(optionModelo.isPresent()) {
-			 informeLab.setModeloInformeLaboratorio(optionModelo.get());
-		}else {
-			
-		}
+		 
 		Optional<Paciente> optioPaciente=pacienteService.findOne(Integer.parseInt(entity.getPacienteid()));
 		if(optioPaciente.isPresent()) {
 			informeLab.setPaciente(optioPaciente.get());
 		}else {
 			
 		}
-		Optional<Doctor> optionDoctor=doctorService.findOne(Integer.parseInt(entity.getDoctorid()));
-		if(optionDoctor.isPresent()) {
-			informeLab.setDoctor(optionDoctor.get());
+		if(!Utilidades.isNullOrEmpty(entity.getDoctorid())){
+			Optional<Doctor> optionDoctor=doctorService.findOne(Integer.parseInt(entity.getDoctorid()));
+			if(optionDoctor.isPresent()) {
+				informeLab.setDoctor(optionDoctor.get());
+			}
 		}
-		
 		informeLab.setDetalle(entity.getDetalle().replace("\"", "'"));
 		informeLab.setInformeid(entity.getInformeid());
 		informeLab.setFechaReporte(entity.getFechaReporte());
+		informeLab.setHoraReporte(entity.getHoraReporte());
+		String[] arrayModelos=entity.getModeloid().split(",");
+		informeLab.setModeloid(String.join(",", arrayModelos));
 		return informeLabRepository.save(informeLab);
 	}
 
@@ -91,17 +92,13 @@ public class InformeLaboratorioService {
 		String htmlHead="<html><body>" + 
 	       		"<table border=\"0\" style=\"border-collapse: collapse; width: 100.549%; border-color: red; height: 32px;\">" + 
 	       		"<tbody>" + 
-	       		"<tr style=\"height: 32px;\">" + 
-	       		"<td style=\"width: 23%; height: 32px;\"></td>" + 
-	       		"<td style=\"width: 25%; height: 32px;\"><img src=\"https://c0.klipartz.com/pngpicture/278/710/sticker-png-aperture-laboratories-logo-laboratory-graphy-newton-game-leaf-text-photography-logo.png\" alt=\"\" width=\"185\" height=\"115\" /></td>" + 
-	       		"<td style=\"width: 28%; height: 32px;\"><b>Centro Medico MediLab</b>" + 
-	       		"<h5><span>Av. Rosales 145 II etapa</span></h5>" + 
-	       		"<span>contact@medilab.com</span><br /><span>telf. 987897767 - 044 656565</span><br /><span>Trujillo, Per&uacute;</span></td>" + 
+	       		"<tr style=\"height: 122px;\">" + 
+	       		
 	       		"<td style=\"width: 23%; height: 32px;\"></td>" + 
 	       		"</tr>" + 
 	       		"</tbody>" + 
 	       		"</table>" + 
-	       		"<hr />" + 
+	       		 
 	       		"<p>&nbsp;</p>" + 
 	       		"<p></p>";
 	       
@@ -111,7 +108,7 @@ public class InformeLaboratorioService {
 		       		"<td style=\"width: 25%;\"></td>" + 
 		       		"<td style=\"width: 25%;\"></td>" + 
 		       		"<td style=\"width: 25%;\"></td>" + 
-		       		"<td style=\"width: 25%;\"><img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Miguel_D%C3%ADaz-Canel_firma.png/800px-Miguel_D%C3%ADaz-Canel_firma.png\" alt=\"\" width=\"168\" height=\"99\" /></td>" + 
+		       		"<td style=\"width: 25%;\"></td>"+
 		       		"</tr>" + 
 		       		"<tr>" + 
 		       		"<td style=\"width: 25%;\"></td>" + 
@@ -129,34 +126,45 @@ public class InformeLaboratorioService {
 		return contenidoHtml;
 	}
 	private String crearHtmlDatosPaciente(InformeLaboratorio informe) {
-		String contenido="<table style=\"border-collapse: collapse; width: 100%; height: 30px; font-size: 10px;\" border=\"0 \">" + 
+		String contenido="<table style=\"border-collapse: collapse; width: 100%; height: 10px; font-size: 10px;\" border=\"0 \">" + 
 				"<tbody>" + 
 				"<tr style=\"height: 8px;\">" + 
-				"<td style=\"width: 50%; height: 8px;\">" + 
-				"<p>Paciente:"+ informe.getPaciente().getNombre()+" "+informe.getPaciente().getApellidos() +"</p>" + 
+				"<td style=\"width: 50%; height: 2px;\">" + 
+				"Paciente: "+ informe.getPaciente().getNombre()+" "+informe.getPaciente().getApellidos() +"" + 
 				"</td>" + 
-				"<td style=\"width: 50%; height: 8px;\">" +				 
-				"</td>" + 
-				"</tr>" + 
-				"<tr style=\"height: 8px;\">" + 
-				"<td style=\"width: 50%; height: 8px;\">" + 
-				"<p>Referencia:"+ validacionDoctor(informe.getDoctor()) +"</p>" + 
-				"</td>" + 
-				"<td style=\"width: 50%; height: 8px;\">" + 
-				"<p>Fecha</p>" + 
+				"<td style=\"width: 50%; height: 2px;\">" +				 
 				"</td>" + 
 				"</tr>" + 
 				"<tr style=\"height: 8px;\">" + 
-				"<td style=\"width: 50%; height: 10px;\">" + 
-				"<p>Edad</p>" + 
+				"<td style=\"width: 50%; height: 2px;\">" + 
+				"Referencia: "+ validacionDoctor(informe.getDoctor())  + 
 				"</td>" + 
-				"<td style=\"width: 50%; height: 10px;\">" + 
-				"<p>Hora toma de Muestra</p>" + 
+				"<td style=\"width: 50%; height: 2px;\">" + 
+				"Fecha: " + informe.getFechaReporte()+
+				"</td>" + 
+				"</tr>" + 
+				"<tr style=\"height: 8px;\">" + 
+				"<td style=\"width: 50%; height: 2px;\">" + 
+				"Edad: " + calculateAge(informe.getPaciente().getFechaNacimiento())+
+				"</td>" + 
+				"<td style=\"width: 50%; height: 2px;\">" + 
+				"Hora toma de Muestra: " + informe.getHoraReporte()+ 
 				"</td>" + 
 				"</tr>" + 
 				"</tbody>" + 
-				"</table>";
+				"</table><hr>";
 		return contenido;
+	}
+
+	private String calculateAge(String fechaNacimiento) {
+		if(fechaNacimiento!=null) {
+		 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-d");
+		 LocalDate birthDate = LocalDate.parse(fechaNacimiento, formatter);
+		 int age=Period.between(birthDate, LocalDate.now()).getYears();
+		 return String.valueOf(age);
+		}else {
+			return "";
+		}
 	}
 
 	private String validacionDoctor(Doctor doctor) {

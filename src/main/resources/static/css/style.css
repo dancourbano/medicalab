@@ -6268,3 +6268,8 @@ header.blue-bg .search:focus {
 .inline-right{
 	float:right;
 }
+.btn-default {
+    background-color: #5e7588;
+    border-color: #bec3c7;
+    color: #fff;
+}

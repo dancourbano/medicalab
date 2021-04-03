@@ -10,6 +10,8 @@ public class InformeLaboratorioDto {
 	
 	private String fechaReporte;
 	
+	private String horaReporte;
+	
 	private String detalle;
 	
 	private String fechaEdicion;

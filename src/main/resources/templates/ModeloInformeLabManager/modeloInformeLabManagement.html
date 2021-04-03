@@ -152,7 +152,7 @@
                 var thisInput = $(this);
                 $("#"+thisInput.attr("name")).val(data[thisInput.attr("name")]);
             });
-        	editor.setContents(data.detalleModelo);
+        	 editor.summernote('code',data.detalleModelo);
         }
 		function showDetail(id){			
 			showDetailFunction(getByURL,id, functionSetData)
@@ -167,7 +167,7 @@
         }
         function resetFormElement() {
             resetForm("frmModalModelo");
-            editor.setContents("");
+            editor.summernote('code',"");
         }
         
        
@@ -180,7 +180,7 @@
             	if(n['name']=='modeloid' && n['value']===0){
             		indexed_array[n['name']] = 0;
             	} else if(n['name']=='detalleModelo'){
-            		indexed_array[n['name']] = editor.getContents();
+            		indexed_array[n['name']] =  editor.summernote('code');
             	} else{
                 	indexed_array[n['name']] = n['value'];
             	}
@@ -196,24 +196,10 @@
             changeYear: true
         });
         function MostrarSummerNote(){
-        	editor=SUNEDITOR.create('editorWeb',{
-	   		     
-       		    width : '100%',
-       		    maxWidth : '600px',
-       		    minWidth : '400px',
-       		    height : 'auto',
-       		    videoWidth : '80%',
-       		    youtubeQuery : 'autoplay=1&mute=1&enablejsapi=1',
-       		    popupDisplay : 'local',
-       		    resizingBar : false,
-    	   		 buttonList : [
-    	   	        ['undo', 'redo', 'font', 'fontSize', 'formatBlock'],
-    	   	        ['bold', 'underline', 'italic', 'strike', 'removeFormat','fontColor', 'hiliteColor', 'outdent', 'indent', 'align', 'horizontalRule', 'list', 'table','link', 'image', 'video', 'fullScreen', 'showBlocks', 'codeView', 'preview']
-    	   	    ],
-       		    callBackSave: function (contents, isChanged) {
-       		        alert(contents);
-       		    }
-        });
+       	 	editor=$('#editorWeb').summernote({
+       	 		lang: 'es-ES',
+       	 		 height: 300,           
+       	 	});
         }
         </script>
 
