@@ -160,7 +160,7 @@
                     fechaReporte: {
                     	required: true,
                     },
-                    modeloid:{
+                    horaReporte: {
                     	required: true,
                     }
                 },
@@ -171,14 +171,14 @@
                     fechaReporte:{
                     	required: "Debe ingresar una Fecha",
                     },
-                    modeloid:{
-                    	required: "Debe seleccionar un modelo",
+                    horaReporte:{
+                    	required: "Debe ingresar una Hora",
                     }
                 }
             });
         }
          
-        $('.select2').on('select2:select', function(e) {
+        $('#modeloid').on('select2:select', function(e) {
       	  var idOption = e.params.data.id;
       	  var dataSelected = $("#modeloid>option[value="+idOption+"]").data("detalle");
       	 dataOld= editor.summernote('code');
@@ -269,15 +269,17 @@
        		var $form = $("#frmModalInforme");
        		if($form.valid()){
        			var arrayData = getFormData($form);
-       			saveFunction(saveURL,arrayData,arrayData.informeid);
-       			resetFormElement();
+       			saveFunction(saveURL,arrayData,arrayData.informeid,showFunctionOk);
        		}
        	}
 		function showList(){
 			showListAllFunction(listAllURL,arrayDatatable,dtTable);
 		}       
 		
-        
+        function showFunctionOk(){
+        	resetFormElement();
+        	document.location.href = '/informeLab/';
+        }
         function functionSetData(data){
         	var form = $("#frmModalInforme");
         	form.find("input").not("[type='submit']").not("[type='reset']").each(function(){
@@ -310,7 +312,7 @@
         function resetFormElement() {
             resetForm("frmModalInforme");
             editor.summernote('code', "");
-            
+            $("#modeloid").val("").trigger("change");
         }
     
         function getFormData($form){

@@ -55,7 +55,63 @@ function saveFunction(saveURL,arrayData,idElement) {
         }
     });
 }
+function saveFunction(saveURL,arrayData,idElement,showFunctionOk) {
+	var TypeJson;
+	 console.log("idElement "+idElement);
+    if (idElement!= "0") {
+        var id = parseInt(idElement);
+        TypeJson='put';
+    } else{
+        var id = 0;
+        TypeJson='post';
+    }	
+    sUrl = saveURL;
+     
+    
+    $.ajax({
+        url: sUrl,
+        type: TypeJson,
+        dataType: 'json',
+        contentType: 'application/json',
+        data: JSON.stringify(arrayData),
+        beforeSend: function () {
+            //showLoadingPage();
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            //closeLoadingPage();
+            swal(jqXHR.statusText);
+        },
+        success: function (response) {
 
+            //closeLoadingPage();
+            if (response.status == "error") {
+                mensajeSalida = "";
+                $.each(response.result,
+                    function (idx, elem) {
+                        mensajeSalida = elem.defaultMessage + "\n" + mensajeSalida;
+                    });
+                swal("Advertencia", mensajeSalida, "warning");
+
+            } else {
+                 
+                
+                swal({
+                	  title: "Exito!",
+                	  text: "Se guardó con éxito!",
+                	  type: "success",
+                	  confirmButtonText: "OK"
+                	}).then((isConfirm) => {                	
+                	  if (isConfirm) {
+                		  showFunctionOk();
+                	  }
+                	});
+               
+                 
+
+            }
+        }
+    });
+}
 function showListAllFunctionGenerico(listURL,functionSetData) {
 
     $.ajax({
